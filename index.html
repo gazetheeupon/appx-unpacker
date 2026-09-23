@@ -120,7 +120,7 @@
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "Show manifest XML \u2014files \u2014unpacked size \u2014signature blob \u2014block map Bundle contents Inner packages 0 inner packages This bundle contains no recognized inner APPX or MSIX packages. Package files \u2014 SelectPathSize Export selected as ZIP Export everything as ZIP Select all files Export report JSON Export file CSV The export preserves package paths and never runs an installer. Notes and limits What this page can and cannot tell you It can read the package structure and XML manifest locally, identify declared capabilities, show whether a signature blob is present, and export the bytes. It does not verify a Microsoft signature, establish that a package is safe, run installers, or replace signing/reputation checks. A missing or present AppxSignature.p7x is only an inventory fact, not a trust verdict. Nothing is uploaded. The package is decompressed in the browser tab and discarded when you close or clear the page. Why do some package paths get renamed on export?",
+      "name": "Why do some package paths get renamed on export?",
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "ZIP extraction paths are normalized to block absolute paths and parent-directory traversal. Original names remain visible in the file table, but an export uses a safe relative path if a package contains a suspicious name."
