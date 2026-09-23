@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>APPX / MSIX Inspector &amp; Unpacker — Inspect Windows App Packages</title>
+<meta name="description" content="Open an APPX, MSIX, APPXBUNDLE, or MSIXBUNDLE package in your browser. Inspect the manifest, identity, capabilities, files, signatures, and inner packages, then export the contents as a ZIP without uploading or executing anything.">
+<meta name="robots" content="index,follow">
+<link rel="stylesheet" href="https://gazetheeupon.github.io/shared-assets/theme.css?v=2">
+<link rel="canonical" href="https://gazetheeupon.github.io/appx-unpacker/">
+<meta property="og:title" content="APPX / MSIX Inspector &amp; Unpacker">
+<meta property="og:description" content="Inspect a Windows APPX or MSIX package and export its contents locally. No upload, no execution.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://gazetheeupon.github.io/appx-unpacker/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="APPX / MSIX Inspector &amp; Unpacker">
+<meta name="twitter:description" content="Inspect a Windows APPX or MSIX package and export its contents locally. No upload, no execution.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "APPX / MSIX Inspector & Unpacker",
+  "url": "https://gazetheeupon.github.io/appx-unpacker/",
+  "description": "Inspect an APPX, MSIX, APPXBUNDLE, or MSIXBUNDLE package and export its contents locally without uploading or executing anything.",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any (runs in web browser)",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
+<style>
+  :root{--bg:#0f1720;--card:#1a2532;--text:#e8edf2;--muted:#93a3b3;--accent:#62d4b1;--border:#2a3745;--warn:#f0c36a;--danger:#ff8e87;--info:#78b9ee;}
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;min-width:300px;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.5;background-image:radial-gradient(circle at 8% 4%,rgba(98,212,177,.08),transparent 28rem),radial-gradient(circle at 95% 25%,rgba(120,185,238,.06),transparent 25rem);}
+  button,input,select,textarea{font:inherit;}
+  button{cursor:pointer;}
+  .page-head{max-width:960px;margin:0 auto;padding:3rem 1rem 1.45rem;}
+  .eyebrow{display:inline-flex;align-items:center;gap:.55rem;color:var(--accent);font:700 .7rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.14em;text-transform:uppercase;}
+  .eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 14px var(--accent);}
+  h1{font-size:clamp(2rem,6vw,3.6rem);line-height:1.03;letter-spacing:-.055em;margin:.8rem 0 .75rem;}
+  .lede{max-width:720px;color:var(--muted);font-size:1.03rem;margin:0;}
+  main{max-width:960px;margin:0 auto;padding:1.4rem 1rem 3rem;}
+  .card{background:rgba(26,37,50,.94);border:1px solid var(--border);border-radius:14px;padding:1.3rem;box-shadow:0 18px 50px rgba(0,0,0,.14);margin-bottom:1rem;}
+  .section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1rem;}
+  .kicker{margin:0;color:var(--accent);font:700 .66rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.13em;text-transform:uppercase;}
+  h2{font-size:1.1rem;line-height:1.25;letter-spacing:-.02em;margin:.4rem 0 1rem;}
+  h3{font-size:.98rem;line-height:1.25;margin:0 0 .65rem;}
+  .dropzone{border:2px dashed var(--border);border-radius:11px;padding:2.2rem 1rem;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;}
+  .dropzone:hover,.dropzone:focus-visible,.dropzone.drag{border-color:var(--accent);background:rgba(98,212,177,.06);outline:none;}
+  .dropzone strong{display:block;font-size:1.05rem;margin-bottom:.35rem;}
+  .dropzone span{display:block;color:var(--muted);font-size:.82rem;}
+  .dropzone input{display:none;}
+  .fname{color:var(--muted);font-size:.82rem;margin-top:.65rem;word-break:break-all;}
+  .actions{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1rem;}
+  .action{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:8px;padding:.65rem .85rem;background:transparent;color:var(--text);font-size:.83rem;font-weight:700;transition:border-color .15s,background .15s,transform .15s;}
+  .action:hover{border-color:var(--accent);background:rgba(98,212,177,.08);transform:translateY(-1px);}
+  .action.primary{background:var(--accent);border-color:var(--accent);color:#09221b;}
+  .action.primary:hover{background:#8ae2c9;border-color:#8ae2c9;}
+  .action:focus-visible{outline:3px solid rgba(120,185,238,.42);outline-offset:2px;}
+  .action[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  .status{min-height:1.25em;margin:.75rem 0 0;color:var(--muted);font-size:.79rem;}
+  .status.error{color:var(--danger);}
+  .result-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1rem;}
+  .result-head h2{margin:0;}
+  .result-badge{color:var(--accent);font:700 .67rem ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;}
+  .identity{display:grid;grid-template-columns:1.1fr 1fr;gap:1rem;align-items:start;}
+  .identity-main{border:1px solid var(--border);border-radius:10px;padding:1rem;background:#0b141c;}
+  .identity-name{font-size:1.35rem;line-height:1.15;letter-spacing:-.03em;margin:0 0 .25rem;}
+  .identity-pub{color:var(--muted);font-size:.82rem;margin:0 0 1rem;}
+  .table{width:100%;border-collapse:collapse;font-size:.8rem;}
+  .table td{padding:.38rem .45rem;border-bottom:1px solid var(--border);vertical-align:top;word-break:break-word;}
+  .table tr:last-child td{border-bottom:0;}
+  .table td:first-child{color:var(--muted);width:38%;white-space:nowrap;}
+  .subcard{border:1px solid var(--border);border-radius:10px;padding:1rem;background:#0b141c;min-width:0;}
+  .subcard h3{color:var(--text);}
+  .subcard p{margin:0;color:var(--muted);font-size:.8rem;line-height:1.45;}
+  .chip-list{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.65rem;}
+  .chip{display:inline-flex;align-items:center;border:1px solid var(--border);border-radius:99px;padding:.25rem .5rem;color:#b8c8d3;font: .7rem ui-monospace,SFMono-Regular,Consolas,monospace;}
+  .chip.accent{border-color:rgba(98,212,177,.5);color:var(--accent);}
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:.55rem;margin:1rem 0;}
+  .metric{min-width:0;background:#0b141c;border:1px solid var(--border);border-radius:9px;padding:.7rem;}
+  .metric-value{display:block;color:var(--text);font:700 1.05rem ui-monospace,SFMono-Regular,Consolas,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .metric-label{display:block;color:var(--muted);font-size:.68rem;margin-top:.15rem;}
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+  .bundle-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.6rem;margin-top:.7rem;}
+  .bundle-item{border:1px solid var(--border);border-radius:9px;padding:.75rem;background:#0b141c;}
+  .bundle-item strong{display:block;font-size:.8rem;word-break:break-word;}
+  .bundle-item p{color:var(--muted);font-size:.73rem;margin:.25rem 0 .55rem;}
+  .bundle-item button{border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:7px;padding:.4rem .6rem;font-size:.72rem;font-weight:700;}
+  .file-head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;margin-bottom:.55rem;}
+  .file-head h2{margin:0;}
+  .file-count{color:var(--muted);font: .72rem ui-monospace,SFMono-Regular,Consolas,monospace;}
+  .file-wrap{max-height:430px;overflow:auto;border:1px solid var(--border);border-radius:9px;}
+  .file-wrap .table{font-size:.76rem;min-width:520px;}
+  .file-wrap .table td{padding:.48rem .55rem;}
+  .file-wrap .table td:first-child{width:auto;color:var(--text);font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.72rem;}
+  .file-wrap .table td:nth-child(2){width:92px;color:var(--muted);text-align:right;white-space:nowrap;}
+  .file-wrap .table td:nth-child(3){width:86px;color:var(--muted);text-align:right;white-space:nowrap;}
+  .file-check{accent-color:var(--accent);}
+  .file-actions{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:.8rem;}
+  .warning-list{margin:.45rem 0 0;padding-left:1.2rem;color:var(--warn);font-size:.8rem;}
+  .warning-list li{margin:.3rem 0;}
+  details{border-top:1px solid var(--border);padding-top:.75rem;margin-top:.8rem;}
+  summary{cursor:pointer;color:var(--text);font-size:.82rem;font-weight:700;}
+  details p{color:var(--muted);font-size:.8rem;margin:.6rem 0 0;}
+  pre{white-space:pre-wrap;word-break:break-word;max-height:280px;overflow:auto;background:#091118;border:1px solid var(--border);border-radius:8px;padding:.75rem;color:#cbd6df;font: .7rem/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;}
+  .privacy{border-left:3px solid var(--accent);padding-left:.8rem;}
+  .privacy p{color:var(--muted);font-size:.82rem;margin:.5rem 0 0;}
+  .privacy strong{color:var(--text);}
+  footer{text-align:center;color:var(--muted);font-size:.8rem;padding:1.2rem 1rem 2.5rem;}
+  footer a{color:var(--accent);}
+  @media (max-width:720px){.identity,.split{grid-template-columns:1fr;}.metrics{grid-template-columns:1fr 1fr;}}
+  @media (max-width:500px){.card{padding:1rem;}.page-head{padding-top:2.3rem;}.action{flex:1 1 auto;}}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.action{transition:none;}}
+</style>
+</head>
+<body>
+<header class="page-head">
+  <div class="eyebrow">RunLocal package desk / 09</div>
+  <h1>APPX / MSIX Inspector</h1>
+  <p class="lede">Open a Windows app package before you install it. Read the manifest, identity, capabilities, file tree, signature blobs, and bundle contents—then export a copy without running a line of package code.</p>
+</header>
+<main>
+  <section class="card" aria-labelledby="inputHeading">
+    <div class="section-head">
+      <div>
+        <p class="kicker">Package intake</p>
+        <h2 id="inputHeading">Choose an APPX or MSIX file</h2>
+      </div>
+      <span class="result-badge">read-only</span>
+    </div>
+    <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Choose or drop an APPX or MSIX package">
+      <strong>Drop a package here, or click to choose</strong>
+      <span>.appx · .msix · .appxbundle · .msixbundle · .zip</span>
+      <input type="file" id="fileInput" accept=".appx,.msix,.appxbundle,.msixbundle,.zip">
+    </div>
+    <div class="fname" id="fileName">No package loaded.</div>
+    <div class="actions">
+      <button class="action" id="clearBtn" type="button">Clear package</button>
+    </div>
+    <p class="status" id="status" role="status" aria-live="polite">The package stays in this browser tab. Nothing is uploaded or executed.</p>
+  </section>
+
+  <div id="resultsStack" hidden>
+    <section class="card" id="identityCard">
+      <div class="result-head">
+        <div>
+          <p class="kicker">Manifest read</p>
+          <h2 id="identityHeading">Package identity</h2>
+        </div>
+        <div style="display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;justify-content:flex-end;"><button class="action" id="backToBundleBtn" type="button" hidden>Back to bundle</button><span class="result-badge" id="packageKind">package</span></div>
+      </div>
+      <div class="identity">
+        <div class="identity-main">
+          <h3 class="identity-name" id="displayName">Unnamed package</h3>
+          <p class="identity-pub" id="publisherName">Unknown publisher</p>
+          <table class="table"><tbody id="identityRows"></tbody></table>
+        </div>
+        <div class="split">
+          <div class="subcard">
+            <h3>Capabilities</h3>
+            <p id="capabilitySummary">No capabilities found in the manifest.</p>
+            <div class="chip-list" id="capabilityList"></div>
+          </div>
+          <div class="subcard">
+            <h3>Applications / entry points</h3>
+            <div id="applicationList"><p>No application entry point was declared.</p></div>
+          </div>
+        </div>
+      </div>
+      <details>
+        <summary>Show manifest XML</summary>
+        <pre id="manifestPreview"></pre>
+      </details>
+    </section>
+
+    <section class="card" id="metricsCard">
+      <div class="metrics">
+        <div class="metric"><span class="metric-value" id="fileCount">—</span><span class="metric-label">files</span></div>
+        <div class="metric"><span class="metric-value" id="unpackedSize">—</span><span class="metric-label">unpacked size</span></div>
+        <div class="metric"><span class="metric-value" id="signatureState">—</span><span class="metric-label">signature blob</span></div>
+        <div class="metric"><span class="metric-value" id="blockMapState">—</span><span class="metric-label">block map</span></div>
+      </div>
+    </section>
+
+    <section class="card" id="bundleCard" hidden>
+      <div class="result-head">
+        <div>
+          <p class="kicker">Bundle contents</p>
+          <h2>Inner packages</h2>
+        </div>
+        <span class="result-badge" id="bundleCount">0 inner packages</span>
+      </div>
+      <p class="subcard" id="bundleSummary">This bundle contains no recognized inner APPX or MSIX packages.</p>
+      <div class="bundle-list" id="bundleList"></div>
+    </section>
+
+    <section class="card" id="filesCard">
+      <div class="file-head">
+        <h2>Package files</h2>
+        <span class="file-count" id="fileCountLabel">—</span>
+      </div>
+      <div class="file-wrap">
+        <table class="table">
+          <thead><tr><th scope="col">Select</th><th scope="col">Path</th><th scope="col">Size</th></tr></thead>
+          <tbody id="filesBody"></tbody>
+        </table>
+      </div>
+      <div class="file-actions">
+        <button class="action primary" id="extractSelectedBtn" type="button">Export selected as ZIP</button>
+        <button class="action" id="extractAllBtn" type="button">Export everything as ZIP</button>
+        <button class="action" id="selectAllBtn" type="button">Select all files</button>
+        <button class="action" id="exportJsonBtn" type="button">Export report JSON</button>
+        <button class="action" id="exportCsvBtn" type="button">Export file CSV</button>
+      </div>
+      <p class="status" id="exportStatus" role="status" aria-live="polite">The export preserves package paths and never runs an installer.</p>
+    </section>
+
+    <section class="card" id="warningsCard" hidden>
+      <h2>Notes and limits</h2>
+      <ul class="warning-list" id="warningsList"></ul>
+    </section>
+
+    <section class="card privacy">
+      <h2>What this page can and cannot tell you</h2>
+      <p><strong>It can</strong> read the package structure and XML manifest locally, identify declared capabilities, show whether a signature blob is present, and export the bytes. <strong>It does not</strong> verify a Microsoft signature, establish that a package is safe, run installers, or replace signing/reputation checks. A missing or present <code>AppxSignature.p7x</code> is only an inventory fact, not a trust verdict.</p>
+      <p><strong>Nothing is uploaded.</strong> The package is decompressed in the browser tab and discarded when you close or clear the page.</p>
+      <details>
+        <summary>Why do some package paths get renamed on export?</summary>
+        <p>ZIP extraction paths are normalized to block absolute paths and parent-directory traversal. Original names remain visible in the file table, but an export uses a safe relative path if a package contains a suspicious name.</p>
+      </details>
+    </section>
+  </div>
+  <div id="ad-slot"></div>
+</main>
+<script src="fflate.bundle.js"></script>
+<script src="app.js"></script>
+<script defer src="https://gazetheeupon.github.io/shared-assets/site.js"></script>
+</body>
+</html>
