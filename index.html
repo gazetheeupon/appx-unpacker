@@ -113,6 +113,54 @@
   @media (max-width:500px){.card{padding:1rem;}.page-head{padding-top:2.3rem;}.action{flex:1 1 auto;}}
   @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}.action{transition:none;}}
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Show manifest XML \u2014files \u2014unpacked size \u2014signature blob \u2014block map Bundle contents Inner packages 0 inner packages This bundle contains no recognized inner APPX or MSIX packages. Package files \u2014 SelectPathSize Export selected as ZIP Export everything as ZIP Select all files Export report JSON Export file CSV The export preserves package paths and never runs an installer. Notes and limits What this page can and cannot tell you It can read the package structure and XML manifest locally, identify declared capabilities, show whether a signature blob is present, and export the bytes. It does not verify a Microsoft signature, establish that a package is safe, run installers, or replace signing/reputation checks. A missing or present AppxSignature.p7x is only an inventory fact, not a trust verdict. Nothing is uploaded. The package is decompressed in the browser tab and discarded when you close or clear the page. Why do some package paths get renamed on export?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "ZIP extraction paths are normalized to block absolute paths and parent-directory traversal. Original names remain visible in the file table, but an export uses a safe relative path if a package contains a suspicious name."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "It says no AppxManifest.xml or AppxBundleManifest.xml was found",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The tool only recognizes a genuine APPX/MSIX/bundle package \u2014 a ZIP/OPC container with a manifest file at its root (or inside each inner package of a bundle). A renamed .zip, a manually zipped folder, or a corrupted download will produce this error even though the file opens fine as a plain ZIP."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "The signature blob is missing \u2014 does that mean the package is unsafe?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Not by itself. This page only reports whether an AppxSignature.p7x blob is present in the package; it does not verify a Microsoft signature or vouch for the package's trustworthiness either way. Treat a missing signature as one more data point, not a verdict."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What's the difference between a bundle and a single package?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "An APPXBUNDLE or MSIXBUNDLE is a container holding several inner APPX/MSIX packages, for example one per CPU architecture or language. This tool detects a bundle from its manifest type or file extension and lists the inner packages it declares, up to the first 200."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does this run any code from the package?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The package is only decompressed and its XML manifest parsed as text \u2014 nothing inside it is ever executed, installed, or run."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <header class="page-head">
@@ -231,6 +279,22 @@
       </details>
     </section>
   </div>
+    <section class="card faq" aria-labelledby="faqHeading">
+    <h2 id="faqHeading">Troubleshooting</h2>
+    <details><summary>It says no AppxManifest.xml or AppxBundleManifest.xml was found</summary>
+      <p>The tool only recognizes a genuine APPX/MSIX/bundle package &mdash; a ZIP/OPC container with a manifest file at its root (or inside each inner package of a bundle). A renamed .zip, a manually zipped folder, or a corrupted download will produce this error even though the file opens fine as a plain ZIP.</p>
+    </details>
+    <details><summary>The signature blob is missing &mdash; does that mean the package is unsafe?</summary>
+      <p>Not by itself. This page only reports whether an <code>AppxSignature.p7x</code> blob is present in the package; it does not verify a Microsoft signature or vouch for the package's trustworthiness either way. Treat a missing signature as one more data point, not a verdict.</p>
+    </details>
+    <details><summary>What's the difference between a bundle and a single package?</summary>
+      <p>An APPXBUNDLE or MSIXBUNDLE is a container holding several inner APPX/MSIX packages, for example one per CPU architecture or language. This tool detects a bundle from its manifest type or file extension and lists the inner packages it declares, up to the first 200.</p>
+    </details>
+    <details><summary>Does this run any code from the package?</summary>
+      <p>No. The package is only decompressed and its XML manifest parsed as text &mdash; nothing inside it is ever executed, installed, or run.</p>
+    </details>
+  </section>
+
   <div id="ad-slot"></div>
 </main>
 <script src="fflate.bundle.js"></script>
